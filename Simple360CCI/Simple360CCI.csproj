@@ -5,6 +5,15 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<PublishTrimmed>false</PublishTrimmed>
+	<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+	<SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+	<PublishReadyToRun>true</PublishReadyToRun>
+	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	<AssemblyName>Simple360CCI</AssemblyName>
+	<Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
