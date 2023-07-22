@@ -96,6 +96,7 @@ internal class Program
 
                 if (delete == true)
                 {
+                    LogLine($"Deleting '{Path.GetFileName(originalFile)}'.");
                     File.Delete(originalFile);
                 }
 
@@ -106,6 +107,10 @@ internal class Program
             }
         }
 
+        if (Directory.Exists(tempFolder))
+        {
+            Directory.Delete(tempFolder, true);
+        }
         LogLine("Done!");
     }
 
