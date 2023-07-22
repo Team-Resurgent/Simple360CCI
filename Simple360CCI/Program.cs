@@ -113,7 +113,7 @@ internal class Program
     {
         var options = new OptionSet {
             { "i|input=", "the source path of ISO/ZIP's.", i => input = i },
-            { "o|output=", "the destination path of CCI's.", i => input = i },
+            { "o|output=", "the destination path of CCI's.", i => output = i },
             { "d|delete", "delete original file after successful processing.", v => delete = v != null },
             { "h|help", "show this message and exit", h => shouldShowHelp = h != null },
         };
@@ -122,7 +122,7 @@ internal class Program
         {
             List<string> extra = options.Parse(args);
 
-            if (shouldShowHelp)
+            if (shouldShowHelp || args.Length == 0)
             {
                 Console.WriteLine("Simple360CCI: ");
                 options.WriteOptionDescriptions(System.Console.Out);
