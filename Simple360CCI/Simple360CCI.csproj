@@ -12,7 +12,7 @@
 	<RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
 	<PublishReadyToRun>true</PublishReadyToRun>
 	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-	<AssemblyName>Simple360CCI</AssemblyName>
+	<AssemblyName>simple360cci</AssemblyName>
 	<Platforms>x64</Platforms>
   </PropertyGroup>
 
