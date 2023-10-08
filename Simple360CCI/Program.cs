@@ -8,6 +8,7 @@ internal class Program
     private static bool delete = false;
     private static string input = string.Empty;
     private static string output = string.Empty;
+    private static string format = "CCI";
 
     public static void LogLine(string line)
     {
@@ -38,7 +39,7 @@ internal class Program
 
     public static void Process()
     {
-        var inputFiles = Directory.GetFiles(input).Where(s => s.EndsWith(".zip", StringComparison.CurrentCultureIgnoreCase) || s.EndsWith(".iso", StringComparison.CurrentCultureIgnoreCase)).ToArray();
+        var inputFiles = Directory.GetFiles(input).Where(s => s.EndsWith(".zip", StringComparison.CurrentCultureIgnoreCase) || s.EndsWith(".iso", StringComparison.CurrentCultureIgnoreCase) || s.EndsWith(".cci", StringComparison.CurrentCultureIgnoreCase)).ToArray();
         var tempFolder = Path.Combine(output, "Temp");
 
         for (int i = 0; i < inputFiles.Length; i++)
@@ -67,7 +68,8 @@ internal class Program
                     }
                 }
 
-                var cciPath = Path.Combine(tempFolder, Path.GetFileNameWithoutExtension(processFile) + ".cci");
+                var extension = format == "CCI" ? ".cci" : ".iso";
+                var containerPath = Path.Combine(tempFolder, Path.GetFileNameWithoutExtension(processFile) + extension);
 
                 using (var isoContainer = new ISOContainerReader(processFile))
                 {
@@ -78,21 +80,26 @@ internal class Program
                         LogLine("Error: Failed to mount.");
                         continue;
                     }
-                    if (ContainerUtility.ConvertContainerToCCI(isoContainer, ProcessingOptions.All, cciPath, null) == false)
+                    if (string.Equals(extension, ".cci") && ContainerUtility.ConvertContainerToCCI(isoContainer, ProcessingOptions.All, containerPath, null) == false)
                     {
                         LogLine("Error: Failed creating cci.");
                         continue;
                     }
+                    if (string.Equals(extension, ".iso") && ContainerUtility.ConvertContainerToISO(isoContainer, ProcessingOptions.All, containerPath, null) == false)
+                    {
+                        LogLine("Error: Failed creating iso.");
+                        continue;
+                    }
                 }
 
-                var destPath = Path.Combine(output, Path.GetFileName(cciPath));
+                var destPath = Path.Combine(output, Path.GetFileName(containerPath));
                 if (destPath == null)
                 {
                     LogLine("Error: Unexpected path is null.");
                     continue;
                 }
 
-                File.Move(cciPath, destPath, true);
+                File.Move(containerPath, destPath, true);
 
                 if (delete == true)
                 {
@@ -117,8 +124,9 @@ internal class Program
     private static void Main(string[] args)
     {
         var options = new OptionSet {
-            { "i|input=", "the source path of ISO/ZIP's.", i => input = i },
-            { "o|output=", "the destination path of CCI's.", i => output = i },
+            { "i|input=", "the source path of ISO/CCI/ZIP's.", i => input = i },
+            { "o|output=", "the destination path of ISO/CCI's.", i => output = i },
+            { "f|format=", "the destination format (ISO/CCI) default CCI.", f => format = f },
             { "d|delete", "delete original file after successful processing.", v => delete = v != null },
             { "h|help", "show this message and exit", h => shouldShowHelp = h != null },
         };
@@ -159,6 +167,11 @@ internal class Program
             if (input.Equals(output, StringComparison.CurrentCultureIgnoreCase))
             {
                 throw new OptionException("output path should not be same as input.", "output");
+            }
+
+            if ((format.Equals("ISO", StringComparison.CurrentCultureIgnoreCase) || format.Equals("CCI", StringComparison.CurrentCultureIgnoreCase)) == false)
+            {
+                throw new OptionException("format should be ISO or CCI.", "format");
             }
 
             Process();
