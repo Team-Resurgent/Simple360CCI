@@ -1,6 +1,7 @@
 ﻿using Mono.Options;
 using SharpCompress.Archives;
 using Xbox360Toolkit;
+using Xbox360Toolkit.Interface;
 
 internal class Program
 {
@@ -70,8 +71,9 @@ internal class Program
 
                 var extension = format == "CCI" ? ".cci" : ".iso";
                 var containerPath = Path.Combine(tempFolder, Path.GetFileNameWithoutExtension(processFile) + extension);
+                var processExtension = Path.GetExtension(processFile);
 
-                using (var isoContainer = new ISOContainerReader(processFile))
+                using (ContainerReader isoContainer = (processExtension.Equals(".iso", StringComparison.CurrentCultureIgnoreCase) ? new ISOContainerReader(processFile) : new CCIContainerReader(processFile)))
                 {
                     LogLine("Converting...");
                     if (isoContainer.TryMount() == false)
